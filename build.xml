@@ -1,0 +1,48 @@
+<project name="lombok-test" default="compile" basedir=".">
+	<description>
+        simple example lombok project
+    </description>
+	<!-- set global properties for this build -->
+	<property name="src" location="src"/>
+	<property name="build" location="bin"/>
+	<property name="lib" location="lib"/>
+	
+	<property name="lombok-lib" location="${lib}/lombok-0.12.0.jar"/>
+	<property name="src-delombok" location="src-delombok"/>
+	
+	<presetdef name="javac">
+		<javac includeantruntime="false" />
+	</presetdef>
+
+	<path id="build-classpath">
+		<fileset dir="${lib}">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+
+	<target name="init" depends="clean">
+		<!-- Create the time stamp -->
+		<tstamp/>
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${build}"/>
+	</target>
+
+	<target name="compile" depends="init" description="compile the source " >
+		<!-- Compile the java code from ${src} into ${build} -->
+		<javac srcdir="${src}" destdir="${build}">
+			<classpath refid="build-classpath"/>
+		</javac>
+	</target>
+
+	<target name="clean" description="clean up" >
+		<!-- Delete the ${build} and ${dist} directory trees -->
+		<delete dir="${build}"/>
+	</target>
+	
+	<target name="delombok" depends="compile">
+		<taskdef classname="lombok.delombok.ant.DelombokTask" classpath="${lombok-lib}" name="delombok" />
+		<delete dir="${src-delombok}"/>
+		<mkdir dir="${src-delombok}" />
+		<delombok verbose="true" encoding="UTF-8" to="${src-delombok}" from="${src}" />
+	</target>
+</project>
